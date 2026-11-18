@@ -23,39 +23,45 @@ The final output on the project input is:
 
 # Pseudocode
 ```
-CLASS Hidden Markov Model 
+FUNCTION _log(probability)
+    IF probability is 0
+        RETURN negative infinity
+    RETURN log(probability)
+
+CLASS Hidden Markov Model
  
     CONSTRUCTOR(initial, transitions, emissions)
         derive states from the initial-probability keys
-        derive alphabet from the emission-dictionary keys
         store the probabilities
-        prepare their logarithms
  
-METHOD viterbi(observations)
+METHOD traceback(observations)
  
     IF observations is empty
         RETURN empty path, log probability 0
  
-    IF any observation is outside the model's alphabet
-        REPORT an invalid observation
+    VALIDATION (validation)
+        derive alphabet from the emission-dictionary keys
+        IF any initial, transition, or emission table does not sum to 1
+            REPORT invalid probabilities
+        IF any observation is outside the model's alphabet
+            REPORT an invalid observation
  
-    create score table, initially negative infinity
-    create previous-state table, initially NONE
- 
-    INITIALIZATION
+    INITIALIZATION (_initialization)
+        create score table, initially negative infinity
+        create previous-state table, initially NONE
         FOR each state
             score[0][state] =
-                log_initial[state]
-                + log_emission[state][observations[0]]
+                _log(initial[state])
+                + _log(emission[state][observations[0]])
  
-    RECURSION
+    RECURSION (_recursion)
         FOR each position t after the first
             FOR each current state
                 FOR each possible preceding state
                     candidate =
                         score[t - 1][preceding state]
-                        + log_transition[preceding state][current state]
-                        + log_emission[current state][observations[t]]
+                        + _log(transition[preceding state][current state])
+                        + _log(emission[current state][observations[t]])
  
                     IF candidate is better than score[t][current state]
                         store candidate as the new score
@@ -71,6 +77,7 @@ METHOD viterbi(observations)
     TRACEBACK
         put the chosen final state at the end of the path
         follow previous-state pointers backward
+        reverse the path so it runs from start to end
         RETURN the path and best log probability
 ```
 
@@ -142,3 +149,6 @@ A justification for why generative AI was used. AI was used to bring a different
 
 Aamna:
 I used Chatgpt throughout this project to help me better understand the Viterbi algorithm, debug errors in our code, and make sense of some of the outputs we were getting. I mainly used it as a way to ask questions when I got stuck and to understand why something wasn't working. I also used it to review our implementation against the assignment requirements and help with formatting and organizing parts of the README. We worked through the code together as a group, and I found it very helpful as an additional resource to check my understanding and work through issues as they came up.
+
+Kailey: 
+I used Claude Sonnet 5.5 for this project for learning how to format Markdown files (or blocks), restructuring the pseudocode and understanding logarithms. The format of Markdown code blocks is not as simple as a Word document where you can click a button and it will be bolded or highlighted. I had Claude create a table for me to reference for future usage. Restructuring the pseudocode was put into Claude to review for gaps from modifying the code. Also understanding logarithmic functions was not my strong suit at all, so asking Claude to explain it to me as if I were in 3rd grade proved to be helpful. 
